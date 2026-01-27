@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 import { FaCloudUploadAlt, FaTimes, FaSpinner, FaCheckCircle } from 'react-icons/fa';
 
+import { resizeImage } from '../utils/imageUtils';
+
 const Upload = () => {
     const [file, setFile] = useState(null);
     const [description, setDescription] = useState('');
@@ -12,12 +14,19 @@ const Upload = () => {
     const [error, setError] = useState(null);
     const navigate = useNavigate();
 
-    const handleFileChange = (e) => {
+    const handleFileChange = async (e) => {
         const selectedFile = e.target.files[0];
         if (selectedFile) {
-            setFile(selectedFile);
-            setPreview(URL.createObjectURL(selectedFile));
-            setError(null);
+            try {
+                // Resize image client-side (max 1200x1200, 80% quality)
+                const resizedFile = await resizeImage(selectedFile, 1200, 1200, 0.8);
+                setFile(resizedFile);
+                setPreview(URL.createObjectURL(resizedFile));
+                setError(null);
+            } catch (err) {
+                console.error("Image resize failed", err);
+                setError("Failed to process image. Please try another file.");
+            }
         }
     };
 

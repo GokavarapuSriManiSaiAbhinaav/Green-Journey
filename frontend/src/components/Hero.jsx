@@ -22,7 +22,7 @@ const Hero = () => {
 
                     {/* Left Column: Text Content */}
                     <div className="space-y-6 md:space-y-8 z-10 text-center md:text-left">
-                        <h1 className="select-none text-3xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 tracking-tight leading-[1.1]">
+                        <h1 className="select-none text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 tracking-tight leading-[1.1]">
                             Document the <br />
                             <span className="text-green-600 inline-block relative">
                                 Journey

@@ -10,6 +10,8 @@ const PlantCard = ({ plant, refreshPlants }) => {
     const [isLightboxOpen, setIsLightboxOpen] = useState(false);
     const isAdmin = !!localStorage.getItem('token');
 
+    const [deletingCommentId, setDeletingCommentId] = useState(null);
+
     const handleDelete = async () => {
         if (window.confirm('Are you sure you want to delete this update?')) {
             try {
@@ -24,21 +26,20 @@ const PlantCard = ({ plant, refreshPlants }) => {
 
     const handleDeleteComment = async (commentId) => {
         if (window.confirm('Delete this comment permanently?')) {
+            setDeletingCommentId(commentId);
             try {
-                // Optimistic update
-                const updatedComments = plant.comments.filter(c => c._id !== commentId);
-                // Call API
+                // Wait for backend confirmation before updating UI
                 await api.delete(`/plants/${plant._id}/comments/${commentId}`);
                 refreshPlants();
             } catch (err) {
                 console.error('Failed to delete comment', err);
-                // If 403, might be permission issue
                 if (err.response && err.response.status === 403) {
                     alert("You don't have permission to delete this comment.");
                 } else {
                     alert('Failed to delete comment.');
                 }
-                refreshPlants(); // Revert on fail
+            } finally {
+                setDeletingCommentId(null);
             }
         }
     };
@@ -90,7 +91,7 @@ const PlantCard = ({ plant, refreshPlants }) => {
                 </div>
 
                 {/* Content Section */}
-                <div className="p-8 flex flex-col items-center text-center bg-white relative z-10">
+                <div className="p-5 md:p-8 flex flex-col items-center text-center bg-white relative z-10">
 
                     {/* Date Badge */}
                     <div className="mb-4 inline-flex items-center px-4 py-1.5 rounded-full bg-green-50 text-green-700 text-xs font-bold uppercase tracking-wider shadow-sm border border-green-100">
@@ -130,10 +131,15 @@ const PlantCard = ({ plant, refreshPlants }) => {
                                         {isAdmin && (
                                             <button
                                                 onClick={() => handleDeleteComment(comment._id)}
-                                                className="absolute top-2 right-2 text-gray-400 hover:text-red-600 p-1.5 rounded-full hover:bg-red-50 transition-all opacity-100"
+                                                disabled={deletingCommentId === comment._id}
+                                                className={`absolute top-2 right-2 p-1.5 rounded-full transition-all ${deletingCommentId === comment._id ? 'bg-red-50 text-red-400 cursor-not-allowed hidden-spinner' : 'text-gray-400 hover:text-red-600 hover:bg-red-50'}`}
                                                 title="Delete Comment (Admin)"
                                             >
-                                                <FaTrash size={12} />
+                                                {deletingCommentId === comment._id ? (
+                                                    <div className="w-3 h-3 border-2 border-red-400 border-t-transparent rounded-full animate-spin"></div>
+                                                ) : (
+                                                    <FaTrash size={12} />
+                                                )}
                                             </button>
                                         )}
                                     </div>
