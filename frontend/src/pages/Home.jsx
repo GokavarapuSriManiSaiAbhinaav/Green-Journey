@@ -16,7 +16,13 @@ const Home = () => {
     const fetchPlants = async () => {
         try {
             const response = await api.get('/plants');
-            setPlants(response.data);
+            // Ensure data is an array
+            if (Array.isArray(response.data)) {
+                setPlants(response.data);
+            } else {
+                console.error("API did not return an array:", response.data);
+                setPlants([]);
+            }
         } catch (err) {
             setError('Failed to load plant data. Please try again later.');
             console.error(err);

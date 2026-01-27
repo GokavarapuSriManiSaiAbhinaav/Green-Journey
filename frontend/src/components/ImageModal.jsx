@@ -27,7 +27,8 @@ const ImageModal = ({ isOpen, onClose, imageSrc, altText }) => {
         >
             <button
                 onClick={onClose}
-                className="absolute top-4 right-4 p-4 sm:p-2 text-white/70 hover:text-white bg-black/50 hover:bg-black/80 rounded-full transition-all duration-200 z-50 backdrop-blur-md"
+                className="absolute top-4 right-4 p-3 text-white bg-black/60 hover:bg-black/90 rounded-full transition-all duration-200 z-[70] backdrop-blur-md shadow-lg border border-white/10"
+                aria-label="Close image viewer"
             >
                 <FaTimes size={24} />
             </button>

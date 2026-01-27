@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { format } from 'date-fns';
 import { FaCalendarAlt, FaEdit, FaTrash, FaExpand } from 'react-icons/fa';
 import api from '../api/axios';
@@ -8,7 +8,16 @@ import ImageModal from './ImageModal';
 const PlantCard = ({ plant, refreshPlants }) => {
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+    const [activeCommentId, setActiveCommentId] = useState(null);
+    const longPressTimer = useRef(null);
     const isAdmin = !!localStorage.getItem('token');
+
+    // Close delete menu when clicking outside
+    useEffect(() => {
+        const handleClickOutside = () => setActiveCommentId(null);
+        document.addEventListener('click', handleClickOutside);
+        return () => document.removeEventListener('click', handleClickOutside);
+    }, []);
 
     const handleDelete = async () => {
         if (window.confirm('Are you sure you want to delete this update?')) {
@@ -20,6 +29,48 @@ const PlantCard = ({ plant, refreshPlants }) => {
                 alert('Failed to delete plant update.');
             }
         }
+    };
+
+    const handleDeleteComment = async (commentId) => {
+        if (window.confirm('Delete this comment permanently?')) {
+            try {
+                // Optimistic update
+                const updatedComments = plant.comments.filter(c => c._id !== commentId);
+                // Call API
+                await api.delete(`/plants/${plant._id}/comments/${commentId}`);
+                refreshPlants();
+            } catch (err) {
+                console.error('Failed to delete comment', err);
+                // If 403, might be permission issue
+                if (err.response && err.response.status === 403) {
+                    alert("You don't have permission to delete this comment.");
+                } else {
+                    alert('Failed to delete comment.');
+                }
+                refreshPlants(); // Revert on fail
+            }
+        }
+    };
+
+    // Long press handlers for Mobile
+    const handleTouchStart = (commentId) => {
+        longPressTimer.current = setTimeout(() => {
+            setActiveCommentId(commentId);
+            // Vibrate if supported
+            if (navigator.vibrate) navigator.vibrate(50);
+        }, 800); // 800ms for long press
+    };
+
+    const handleTouchEnd = () => {
+        if (longPressTimer.current) {
+            clearTimeout(longPressTimer.current);
+        }
+    };
+
+    // Right click handler for Desktop
+    const handleContextMenu = (e, commentId) => {
+        e.preventDefault();
+        setActiveCommentId(commentId);
     };
 
     return (
@@ -89,11 +140,36 @@ const PlantCard = ({ plant, refreshPlants }) => {
                     {plant.comments && plant.comments.length > 0 && (
                         <div className="space-y-3 mb-6 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
                             {plant.comments.map((comment, index) => (
-                                <div key={index} className="bg-white p-3 rounded-lg shadow-sm border border-gray-100 text-sm">
-                                    <p className="text-gray-700">{comment.text}</p>
-                                    <span className="text-xs text-gray-400 mt-1 block">
-                                        {format(new Date(comment.date), 'MMM d, yyyy')}
-                                    </span>
+                                <div
+                                    key={comment._id || index}
+                                    className={`bg-white p-3 rounded-lg shadow-sm border border-gray-100 text-sm relative group select-none ${activeCommentId === comment._id ? 'bg-red-50 border-red-200' : ''}`}
+                                    onContextMenu={(e) => handleContextMenu(e, comment._id)}
+                                    onTouchStart={() => handleTouchStart(comment._id)}
+                                    onTouchEnd={handleTouchEnd}
+                                    onTouchMove={handleTouchEnd} // Cancel on scroll
+                                >
+                                    <div className="flex justify-between items-start">
+                                        <div className="flex-1">
+                                            <p className="text-gray-700">{comment.text}</p>
+                                            <span className="text-xs text-gray-400 mt-1 block">
+                                                {format(new Date(comment.date), 'MMM d, yyyy')}
+                                            </span>
+                                        </div>
+
+                                        {/* Delete Button (Visible on Active) */}
+                                        {activeCommentId === comment._id && (
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleDeleteComment(comment._id);
+                                                }}
+                                                className="ml-2 text-red-600 hover:text-red-800 p-1 rounded hover:bg-red-100 transition-colors animate-fade-in"
+                                                title="Delete Comment"
+                                            >
+                                                <FaTrash size={14} />
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
                             ))}
                         </div>
