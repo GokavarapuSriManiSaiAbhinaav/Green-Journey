@@ -8,16 +8,7 @@ import ImageModal from './ImageModal';
 const PlantCard = ({ plant, refreshPlants }) => {
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [isLightboxOpen, setIsLightboxOpen] = useState(false);
-    const [activeCommentId, setActiveCommentId] = useState(null);
-    const longPressTimer = useRef(null);
     const isAdmin = !!localStorage.getItem('token');
-
-    // Close delete menu when clicking outside
-    useEffect(() => {
-        const handleClickOutside = () => setActiveCommentId(null);
-        document.addEventListener('click', handleClickOutside);
-        return () => document.removeEventListener('click', handleClickOutside);
-    }, []);
 
     const handleDelete = async () => {
         if (window.confirm('Are you sure you want to delete this update?')) {
@@ -52,26 +43,7 @@ const PlantCard = ({ plant, refreshPlants }) => {
         }
     };
 
-    // Long press handlers for Mobile
-    const handleTouchStart = (commentId) => {
-        longPressTimer.current = setTimeout(() => {
-            setActiveCommentId(commentId);
-            // Vibrate if supported
-            if (navigator.vibrate) navigator.vibrate(50);
-        }, 800); // 800ms for long press
-    };
 
-    const handleTouchEnd = () => {
-        if (longPressTimer.current) {
-            clearTimeout(longPressTimer.current);
-        }
-    };
-
-    // Right click handler for Desktop
-    const handleContextMenu = (e, commentId) => {
-        e.preventDefault();
-        setActiveCommentId(commentId);
-    };
 
     return (
         <>
@@ -106,6 +78,8 @@ const PlantCard = ({ plant, refreshPlants }) => {
                     <img
                         src={plant.image}
                         alt="Plant update"
+                        loading="lazy"
+                        decoding="async"
                         className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out"
                     />
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
@@ -142,31 +116,24 @@ const PlantCard = ({ plant, refreshPlants }) => {
                             {plant.comments.map((comment, index) => (
                                 <div
                                     key={comment._id || index}
-                                    className={`bg-white p-3 rounded-lg shadow-sm border border-gray-100 text-sm relative group select-none ${activeCommentId === comment._id ? 'bg-red-50 border-red-200' : ''}`}
-                                    onContextMenu={(e) => handleContextMenu(e, comment._id)}
-                                    onTouchStart={() => handleTouchStart(comment._id)}
-                                    onTouchEnd={handleTouchEnd}
-                                    onTouchMove={handleTouchEnd} // Cancel on scroll
+                                    className="bg-white p-3 rounded-lg shadow-sm border border-gray-100 text-sm relative group"
                                 >
                                     <div className="flex justify-between items-start">
-                                        <div className="flex-1">
-                                            <p className="text-gray-700">{comment.text}</p>
+                                        <div className="flex-1 pr-6">
+                                            <p className="text-gray-700 break-words">{comment.text}</p>
                                             <span className="text-xs text-gray-400 mt-1 block">
                                                 {format(new Date(comment.date), 'MMM d, yyyy')}
                                             </span>
                                         </div>
 
-                                        {/* Delete Button (Visible on Active) */}
-                                        {activeCommentId === comment._id && (
+                                        {/* Admin Delete Button (Always Visible) */}
+                                        {isAdmin && (
                                             <button
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    handleDeleteComment(comment._id);
-                                                }}
-                                                className="ml-2 text-red-600 hover:text-red-800 p-1 rounded hover:bg-red-100 transition-colors animate-fade-in"
-                                                title="Delete Comment"
+                                                onClick={() => handleDeleteComment(comment._id)}
+                                                className="absolute top-2 right-2 text-gray-400 hover:text-red-600 p-1.5 rounded-full hover:bg-red-50 transition-all opacity-100"
+                                                title="Delete Comment (Admin)"
                                             >
-                                                <FaTrash size={14} />
+                                                <FaTrash size={12} />
                                             </button>
                                         )}
                                     </div>

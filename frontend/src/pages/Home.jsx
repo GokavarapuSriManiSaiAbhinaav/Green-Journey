@@ -58,8 +58,8 @@ const Home = () => {
             <Hero />
 
             <div id="timeline" className="flex-grow bg-gray-50/30">
-                <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-                    <div className="text-center mb-16 space-y-4">
+                <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-20">
+                    <div className="text-center mb-10 md:mb-16 space-y-3 md:space-y-4">
                         <div className="inline-flex items-center justify-center p-3 bg-green-50 rounded-full mb-4">
                             <FaSeedling className="text-3xl text-green-600" />
                         </div>

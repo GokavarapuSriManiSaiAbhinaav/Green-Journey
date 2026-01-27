@@ -29,14 +29,14 @@ const Navbar = () => {
 
     return (
         <nav className="fixed top-0 left-0 right-0 bg-white/90 backdrop-blur-md border-b border-gray-100 z-50">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
 
                 {/* Logo Section */}
                 <Link to="/" onClick={closeMenu} className="flex items-center space-x-2 group z-50">
-                    <div className="bg-green-50 p-2 rounded-xl group-hover:bg-green-100 transition-colors">
-                        <FaLeaf className="text-xl text-green-600" />
+                    <div className="bg-green-50 p-1.5 rounded-xl group-hover:bg-green-100 transition-colors">
+                        <FaLeaf className="text-lg text-green-600" />
                     </div>
-                    <span className="text-xl font-bold tracking-tight text-gray-900 group-hover:text-green-700 transition-colors">
+                    <span className="text-lg font-bold tracking-tight text-gray-900 group-hover:text-green-700 transition-colors">
                         Green<span className="text-green-600">Journey</span>
                     </span>
                 </Link>
@@ -47,12 +47,12 @@ const Navbar = () => {
                     className="p-2 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors z-50 text-gray-700"
                     aria-label="Menu"
                 >
-                    {isOpen ? <HiX size={28} /> : <HiOutlineMenuAlt3 size={28} />}
+                    {isOpen ? <HiX size={24} /> : <HiOutlineMenuAlt3 size={24} />}
                 </button>
 
                 {/* Dropdown Menu Overlay */}
                 {isOpen && (
-                    <div className="absolute top-20 left-0 right-0 sm:left-auto sm:right-4 sm:w-72 bg-white sm:rounded-2xl shadow-xl border-t sm:border border-gray-100 p-4 animate-fade-in origin-top transform transition-all z-50">
+                    <div className="absolute top-16 left-0 right-0 sm:left-auto sm:right-4 sm:w-72 bg-white sm:rounded-2xl shadow-xl border-t sm:border border-gray-100 p-4 animate-fade-in origin-top transform transition-all z-50">
                         <ul className="space-y-3">
                             <li>
                                 <button

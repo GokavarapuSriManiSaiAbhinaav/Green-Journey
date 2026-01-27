@@ -127,4 +127,29 @@ router.post('/:id/comments', async (req, res) => {
   }
 });
 
+// ADMIN: Delete comment
+router.delete('/:id/comments/:commentId', auth, async (req, res) => {
+  try {
+    const plant = await Plant.findById(req.params.id);
+    if (!plant) {
+      return res.status(404).json({ message: 'Plant not found' });
+    }
+
+    // Filter out the comment
+    const commentIndex = plant.comments.findIndex(c => c._id.toString() === req.params.commentId);
+
+    if (commentIndex === -1) {
+      return res.status(404).json({ message: 'Comment not found' });
+    }
+
+    plant.comments.splice(commentIndex, 1);
+    await plant.save();
+
+    res.json(plant);
+  } catch (err) {
+    console.error('Delete comment error:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 module.exports = router;
