@@ -3,17 +3,26 @@ import axiosRetry from 'axios-retry';
 
 const api = axios.create({
     baseURL: import.meta.env.VITE_API_URL + "/api",
-    timeout: 10000, // 10s timeout for mobile networks
+    timeout: 30000, // Increased to 30s to handle Render free tier cold starts
+    headers: {
+        'Content-Type': 'application/json',
+    }
 });
 
 // Configure retry strategy (3 retries, exponential backoff)
 axiosRetry(api, {
     retries: 3,
-    retryDelay: axiosRetry.exponentialDelay,
+    retryDelay: (retryCount) => {
+        return axiosRetry.exponentialDelay(retryCount);
+    },
     retryCondition: (error) => {
         // Retry on network errors or 5xx status codes
-        return axiosRetry.isNetworkOrIdempotentRequestError(error) || (error.response && error.response.status >= 500);
-    }
+        // Also retry on timeouts (ECONNABORTED)
+        return axiosRetry.isNetworkOrIdempotentRequestError(error) ||
+            (error.code === 'ECONNABORTED') ||
+            (error.response && error.response.status >= 500);
+    },
+    shouldResetTimeout: true, // Reset timeout for each retry
 });
 
 // Add a request interceptor to include the JWT token
@@ -34,9 +43,12 @@ api.interceptors.request.use(
 api.interceptors.response.use(
     (response) => response,
     (error) => {
-        if (error.code === 'ECONNABORTED') {
-            console.warn('Request timed out');
+        const originalRequest = error.config;
+
+        if (error.code === 'ECONNABORTED' && error.message.includes('timeout')) {
+            console.warn('Request timed out - Backend might be waking up');
         }
+
         if (error.response && error.response.status === 401) {
             localStorage.removeItem('token');
             window.location.href = '/admin'; // Redirect to login

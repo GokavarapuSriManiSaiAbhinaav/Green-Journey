@@ -20,7 +20,14 @@ const Login = () => {
             localStorage.setItem('token', response.data.token);
             navigate('/admin/upload');
         } catch (err) {
-            setError(err.response?.data?.message || 'Login failed');
+            console.error(err);
+            if (err.code === 'ECONNABORTED' || err.message.includes('timeout')) {
+                setError('Connection timed out. The server might be waking up, please try again in a moment.');
+            } else if (!err.response) {
+                setError('Network error. Check your connection.');
+            } else {
+                setError(err.response?.data?.message || 'Login failed');
+            }
         } finally {
             setLoading(false);
         }
