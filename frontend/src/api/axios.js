@@ -3,7 +3,7 @@ import axiosRetry from 'axios-retry';
 
 const api = axios.create({
     baseURL: import.meta.env.VITE_API_URL + "/api",
-    timeout: 30000, // Increased to 30s to handle Render free tier cold starts
+    timeout: 60000, // Increased to 60s to handle Render/Vercel free tier cold starts
     headers: {
         'Content-Type': 'application/json',
     }
@@ -18,8 +18,10 @@ axiosRetry(api, {
     retryCondition: (error) => {
         // Retry on network errors or 5xx status codes
         // Also retry on timeouts (ECONNABORTED)
+        // AND retry on "Network Error" (common on mobile)
         return axiosRetry.isNetworkOrIdempotentRequestError(error) ||
             (error.code === 'ECONNABORTED') ||
+            (error.message && error.message.includes('Network Error')) ||
             (error.response && error.response.status >= 500);
     },
     shouldResetTimeout: true, // Reset timeout for each retry
@@ -46,7 +48,7 @@ api.interceptors.response.use(
         const originalRequest = error.config;
 
         if (error.code === 'ECONNABORTED' && error.message.includes('timeout')) {
-            console.warn('Request timed out - Backend might be waking up');
+            console.warn('Request timed out - Backend might be waking up or slow mobile network');
         }
 
         if (error.response && error.response.status === 401) {

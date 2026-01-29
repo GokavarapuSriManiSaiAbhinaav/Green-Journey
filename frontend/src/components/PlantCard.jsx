@@ -73,7 +73,7 @@ const PlantCard = ({ plant, refreshPlants }) => {
 
                 {/* Image Section - Click to Open Lightbox */}
                 <div
-                    className="relative aspect-[4/3] w-full overflow-hidden cursor-zoom-in group"
+                    className="relative aspect-square w-full overflow-hidden cursor-zoom-in group"
                     onClick={() => setIsLightboxOpen(true)}
                 >
                     <img
@@ -199,4 +199,4 @@ const PlantCard = ({ plant, refreshPlants }) => {
     );
 };
 
-export default PlantCard;
+export default React.memo(PlantCard);

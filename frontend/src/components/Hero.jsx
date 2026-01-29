@@ -17,7 +17,7 @@ const Hero = () => {
             <div className="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 rounded-full bg-green-100/50 blur-3xl opacity-60 pointer-events-none" />
             <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 rounded-full bg-teal-100/40 blur-3xl opacity-60 pointer-events-none" />
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12 md:pt-32 md:pb-28">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-12 md:pt-32 md:pb-28">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-20 items-center">
 
                     {/* Left Column: Text Content */}
@@ -61,6 +61,7 @@ const Hero = () => {
                             <img
                                 src={heroPlantImage}
                                 alt="Abstract growth illustration"
+                                loading="eager"
                                 className="w-full h-full object-contain animate-float drop-shadow-xl relative z-10"
                             />
 

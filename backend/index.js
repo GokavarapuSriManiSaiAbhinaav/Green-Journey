@@ -6,7 +6,12 @@ const adminRoutes = require('./routes/adminRoutes');
 const plantRoutes = require('./routes/plantRoutes');
 
 
+const compression = require('compression');
+
 const app = express();
+
+// 🔥 Performance Middleware
+app.use(compression()); // Compress all responses
 
 app.use(cors());
 
@@ -15,14 +20,14 @@ app.use((req, res, next) => {
   if (req.is('multipart/form-data')) {
     return next();
   }
-  express.json()(req, res, next);
+  express.json({ limit: '50mb' })(req, res, next);
 });
 
 app.use((req, res, next) => {
   if (req.is('multipart/form-data')) {
     return next();
   }
-  express.urlencoded({ extended: true })(req, res, next);
+  express.urlencoded({ extended: true, limit: '50mb' })(req, res, next);
 });
 
 // 🔥 MongoDB connection
