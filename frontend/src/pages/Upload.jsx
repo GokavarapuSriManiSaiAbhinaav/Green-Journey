@@ -7,6 +7,7 @@ import { resizeImage } from '../utils/imageUtils';
 
 const Upload = () => {
     const [file, setFile] = useState(null);
+    const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [preview, setPreview] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -37,12 +38,13 @@ const Upload = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!file || !description) return;
+        if (!file || !description || !title) return;
 
         setLoading(true);
         setError(null);
 
         const formData = new FormData();
+        formData.append('title', title);
         formData.append('image', file);
         formData.append('description', description);
 
@@ -56,6 +58,7 @@ const Upload = () => {
             // Success State handling
             setSuccess(true);
             setFile(null);
+            setTitle('');
             setDescription('');
             setPreview(null);
 
@@ -107,6 +110,19 @@ const Upload = () => {
                 )}
 
                 <form onSubmit={handleSubmit} className="space-y-6">
+                    {/* Title Input */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Title <span className="text-gray-400 font-normal">(e.g., Day 1, Day 5 – New Leaves)</span></label>
+                        <input
+                            required
+                            type="text"
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all outline-none"
+                            placeholder="Give this update a title"
+                        />
+                    </div>
+
                     {/* Image Upload Area */}
                     <div className="space-y-2">
                         <label className="block text-sm font-medium text-gray-700">Plant Photo</label>
@@ -158,8 +174,8 @@ const Upload = () => {
                     <div className="flex justify-end">
                         <button
                             type="submit"
-                            disabled={loading || !file || !description}
-                            className={`w-full sm:w-auto px-8 py-4 sm:py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center ${(loading || !file || !description) ? 'opacity-60 cursor-not-allowed transform-none' : 'hover:-translate-y-0.5'
+                            disabled={loading || !file || !description || !title}
+                            className={`w-full sm:w-auto px-8 py-4 sm:py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center ${(loading || !file || !description || !title) ? 'opacity-60 cursor-not-allowed transform-none' : 'hover:-translate-y-0.5'
                                 }`}
                         >
                             {loading ? (

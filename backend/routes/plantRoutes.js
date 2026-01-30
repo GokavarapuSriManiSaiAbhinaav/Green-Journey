@@ -39,6 +39,16 @@ router.post('/', auth, (req, res, next) => {
       return res.status(400).json({ message: 'Image is required - ensure file field name is "image"' });
     }
 
+    if (!req.body.title) {
+      // If title is missing (which shouldn't happen from new frontend but might from old generic requests), provide a default? 
+      // The user requirement says "required", but also "Ensure existing plant records without a title do NOT crash the app". 
+      // For new uploads, we should enforce it.
+      // Actually user requirement 2 said: "Ensure existing plant records without a title do NOT crash the app: Use a default value like "Growth Update" if title is missing."
+      // That usually refers to GET (display), but for POST (creation) the Admin/Upload page changes say "Make the title required before upload."
+      // So valid validation is correct here.
+      return res.status(400).json({ message: 'Title is required' });
+    }
+
     if (!req.body.description) {
       return res.status(400).json({ message: 'Description is required' });
     }
@@ -46,6 +56,7 @@ router.post('/', auth, (req, res, next) => {
     console.log('Creating plant with image:', req.file.path || req.file.secure_url);
 
     const plant = await Plant.create({
+      title: req.body.title,
       image: req.file.path || req.file.secure_url,
       description: req.body.description,
     });
@@ -60,8 +71,12 @@ router.post('/', auth, (req, res, next) => {
 // ADMIN: Update plant
 router.put('/:id', auth, upload.single('image'), async (req, res) => {
   try {
-    const { description, date } = req.body;
+    const { title, description, date } = req.body;
     let updateData = { description };
+
+    if (title) {
+      updateData.title = title;
+    }
 
     if (date) {
       updateData.date = date;

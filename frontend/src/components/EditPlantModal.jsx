@@ -3,6 +3,7 @@ import { FaTimes, FaCloudUploadAlt, FaSpinner, FaSave } from 'react-icons/fa';
 import api from '../api/axios';
 
 const EditPlantModal = ({ plant, isOpen, onClose, onUpdate }) => {
+    const [title, setTitle] = useState(plant.title || '');
     const [description, setDescription] = useState(plant.description);
     const [date, setDate] = useState(plant.date ? new Date(plant.date).toISOString().split('T')[0] : '');
     const [file, setFile] = useState(null);
@@ -26,6 +27,7 @@ const EditPlantModal = ({ plant, isOpen, onClose, onUpdate }) => {
         setError(null);
 
         const formData = new FormData();
+        formData.append('title', title);
         formData.append('description', description);
         if (date) formData.append('date', date);
         if (file) formData.append('image', file);
@@ -60,6 +62,17 @@ const EditPlantModal = ({ plant, isOpen, onClose, onUpdate }) => {
                             {error}
                         </div>
                     )}
+
+                    <div className="space-y-2">
+                        <label className="block text-sm font-medium text-gray-700">Title</label>
+                        <input
+                            type="text"
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none"
+                            placeholder="Growth Update Title"
+                        />
+                    </div>
 
                     <div className="space-y-2">
                         <label className="block text-sm font-medium text-gray-700">Image</label>

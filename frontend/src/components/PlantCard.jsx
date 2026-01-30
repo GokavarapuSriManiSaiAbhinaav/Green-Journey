@@ -71,6 +71,13 @@ const PlantCard = ({ plant, refreshPlants }) => {
                     </div>
                 )}
 
+                {/* Title Section */}
+                <div className="p-4 pb-2 text-center bg-white border-b border-gray-50">
+                    <h3 className="text-xl md:text-2xl font-bold text-gray-800 tracking-tight">
+                        {plant.title || "Growth Update"}
+                    </h3>
+                </div>
+
                 {/* Image Section - Click to Open Lightbox */}
                 <div
                     className="relative aspect-square w-full overflow-hidden cursor-zoom-in group"

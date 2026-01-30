@@ -3,6 +3,11 @@ import React from 'react';
 const SkeletonPlantCard = () => {
     return (
         <div className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100 flex flex-col w-full mx-auto animate-pulse">
+            {/* Title Placeholder */}
+            <div className="p-4 flex justify-center border-b border-gray-50">
+                <div className="h-7 bg-gray-200 rounded w-1/2"></div>
+            </div>
+
             {/* Image Placeholder */}
             <div className="aspect-[4/3] w-full bg-gray-200"></div>
 
