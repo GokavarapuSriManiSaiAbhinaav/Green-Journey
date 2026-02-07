@@ -59,6 +59,7 @@ router.post('/', auth, (req, res, next) => {
       title: req.body.title,
       image: req.file.path || req.file.secure_url,
       description: req.body.description,
+      date: req.body.date || Date.now()
     });
 
     res.status(201).json(plant);

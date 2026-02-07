@@ -13,6 +13,7 @@ const Upload = () => {
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState(null);
+    const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
     const navigate = useNavigate();
 
     const handleFileChange = async (e) => {
@@ -47,6 +48,7 @@ const Upload = () => {
         formData.append('title', title);
         formData.append('image', file);
         formData.append('description', description);
+        formData.append('date', date);
 
         try {
             await api.post('/plants', formData, {
@@ -60,6 +62,7 @@ const Upload = () => {
             setFile(null);
             setTitle('');
             setDescription('');
+            setDate(new Date().toISOString().split('T')[0]);
             setPreview(null);
 
             // Navigate after short delay to show success message
@@ -120,6 +123,18 @@ const Upload = () => {
                             onChange={(e) => setTitle(e.target.value)}
                             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all outline-none"
                             placeholder="Give this update a title"
+                        />
+                    </div>
+
+                    {/* Date Input */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Update Date</label>
+                        <input
+                            required
+                            type="date"
+                            value={date}
+                            onChange={(e) => setDate(e.target.value)}
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all outline-none"
                         />
                     </div>
 
