@@ -2,7 +2,7 @@ import axios from 'axios';
 import axiosRetry from 'axios-retry';
 
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL + "/api",
+    baseURL: (import.meta.env.VITE_API_URL || 'http://localhost:5000') + "/api",
     timeout: 60000, // Increased to 60s to handle Render/Vercel free tier cold starts
     headers: {
         'Content-Type': 'application/json',
