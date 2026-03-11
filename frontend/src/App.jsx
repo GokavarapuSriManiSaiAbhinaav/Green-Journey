@@ -6,11 +6,13 @@ import Upload from './pages/Upload';
 import About from './pages/About'; // Added About import
 import Navbar from './components/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
+import GlobalLoading from './components/GlobalLoading';
 
 function App() {
   return (
     <Router>
       <div className="min-h-screen bg-gray-50 flex flex-col">
+        <GlobalLoading />
         <Navbar />
         <main className="flex-grow container mx-auto px-4 py-8">
           <Routes>

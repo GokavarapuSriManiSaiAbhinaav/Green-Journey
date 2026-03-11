@@ -9,25 +9,18 @@ const Home = () => {
     const [plants, setPlants] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [isColdStart, setIsColdStart] = useState(false);
-    const initLoadTimerRef = useRef(null);
+    const fetchCalled = useRef(false);
 
     useEffect(() => {
-        fetchPlants();
-        return () => {
-            if (initLoadTimerRef.current) clearTimeout(initLoadTimerRef.current);
-        };
+        if (!fetchCalled.current) {
+            fetchCalled.current = true;
+            fetchPlants();
+        }
     }, []);
 
     const fetchPlants = async () => {
         setLoading(true);
         setError(null);
-        setIsColdStart(false);
-
-        // If loading takes more than 3s, show "Waking up" message
-        initLoadTimerRef.current = setTimeout(() => {
-            setIsColdStart(true);
-        }, 3000);
 
         try {
             const response = await api.get('/plants');
@@ -51,9 +44,7 @@ const Home = () => {
                 setError('Failed to load plant data. Please try again later.');
             }
         } finally {
-            if (initLoadTimerRef.current) clearTimeout(initLoadTimerRef.current);
             setLoading(false);
-            setIsColdStart(false);
         }
     };
 
@@ -74,14 +65,6 @@ const Home = () => {
                             A visual timeline of growth and care.
                         </p>
                     </div>
-
-                    {/* Cold Start / Slow Connection Warning */}
-                    {isColdStart && loading && (
-                        <div className="mb-8 p-4 bg-blue-50 text-blue-700 rounded-lg flex items-center justify-center animate-pulse">
-                            <FaSync className="animate-spin mr-3" />
-                            <span>Waking up the backend server (this may take up to 30s)...</span>
-                        </div>
-                    )}
 
                     {error ? (
                         <div className="text-center py-10">

@@ -61,7 +61,7 @@ const Hero = () => {
                             <img
                                 src={heroPlantImage}
                                 alt="Abstract growth illustration"
-                                loading="eager"
+                                loading="lazy"
                                 className="w-full h-full object-contain animate-float drop-shadow-xl relative z-10"
                             />
 
